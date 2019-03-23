@@ -1,0 +1,246 @@
+<template>
+ <div>
+
+     <SlideBar ref="slideBar"  :itemList.sync='eventList'></SlideBar>
+
+     <div id="map">
+
+     </div>
+     <div id="btn">
+          <!--裁剪-->
+         <span class="item btn btn-default" @click="clip">
+             <img src="../assets/jd.png">
+         </span>
+         <!--刷新-->
+         <span class="item btn btn-default" @click="refresh">
+             <img src="../assets/refresh.png">
+         </span>
+         <!--擦除-->
+         <span class="item btn btn-default" title="清除要素" @click="erase">
+             <img src="../assets/xp.png" >
+         </span>
+
+     </div>
+     <AppTab @manager="manager"></AppTab>
+
+ </div>
+
+</template>
+
+<script>
+    import AppTab from './AppTab'
+    import  esriLoader from 'esri-loader'
+    import SlideBar from  './SlideBar'
+    import 'bootstrap/dist/css/bootstrap.min.css'
+    import System from '../libs/System'
+    import CustomRouters from '../libs/CustomRouters'
+    let system=new System();
+    CustomRouters.init();
+
+  export default {
+    name: 'Index',
+
+    data:function () {
+      return{
+        /*定义事件列表*/
+        eventList:[
+            {
+                name:'病虫害防治',
+                method:function (argument) {
+                    /* body... */
+                    console.log(this.name)
+                }
+            },
+
+        ]
+
+      }
+    },
+    components:{
+      AppTab,SlideBar,
+    },
+      created:function(){
+
+      },
+    //组件装载之后
+    mounted:function(){
+        /*初始化事件*/
+
+
+      /*加载地图*/
+      this.createMap();
+
+    },
+    methods:{
+      createMap: function () {
+        const options = {
+          // 可以使用自定义资源加载,arcgis 官网加载太慢了,经常加载失败.后面会讲到自己本地如何配置资源
+          // url: 'http://localhost/arcgis_js_api/library/4.7/init.js'
+          url:'https://js.arcgis.com/4.7/'
+        }
+
+        esriLoader.loadModules ([
+          "esri/Map",
+          'esri/views/MapView',
+          "esri/Graphic",
+          "esri/geometry/Point",
+        "esri/views/2d/draw/Draw",
+        "esri/layers/TileLayer",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Feature",
+        "esri/Graphic",
+        "esri/layers/GraphicsLayer",
+
+        "esri/geometry/Circle",
+        "esri/Color",
+        "esri/symbols/SimpleLineSymbol",
+
+        "esri/geometry/geometryEngine",
+        "esri/geometry/Polygon",
+        "esri/widgets/Print",
+        "esri/tasks/PrintTask",
+
+
+        "esri/config",
+        "esri/widgets/NavigationToggle",
+        "esri/widgets/Fullscreen",
+        "esri/views/ViewAnimation",
+        "esri/widgets/Expand",
+        "esri/widgets/Popup",
+        'esri/PopupTemplate',
+
+        "esri/tasks/GeometryService",
+
+
+        "esri/symbols/PictureMarkerSymbol",
+        'esri/geometry/Polyline',
+        "esri/widgets/Search",
+        'esri/tasks/Locator',
+        "esri/widgets/ScaleBar",
+        "esri/widgets/LayerList",
+        "esri/tasks/support/BufferParameters",
+        "esri/geometry/SpatialReference",
+        "esri/widgets/Legend",
+        "esri/symbols/SimpleFillSymbol",
+
+        "esri/widgets/Legend",
+        "esri/renderers/SimpleRenderer",
+
+        ], options)
+          .then (([Map, MapView, Graphic, Point,Draw,TileLayer,SimpleMarkerSymbol,FeatureLayer,Feature,GraphicsLayer,Circle,Color,SimpleLineSymbol,
+                      geometryEngine,Polygon,esriConfig,
+                      NavigationToggle,Fullscreen,ViewAnimation,Expand,Popup,PopupTemplate,QueryTask,Query,GeometryService,
+                      PictureMarkerSymbol,Polyline,Search,Locator,ScaleBar,LayerList,BufferParameters,SpatialReference,Legend,
+                      SimpleFillSymbol
+                  ]) => {
+
+              /*初始化system属性*/
+              // http://localhost:6080/arcgis/manager/service.html?name=%E6%97%A0%E6%A0%87%E9%A2%98.MapServer&folder=bs
+            system.Map = new Map ();
+
+
+
+
+           for(let i=0;i<14;i++){
+                let layer1=new FeatureLayer({
+                url:'http://192.168.43.121:6080/arcgis/rest/services//test/gis/MapServer/'+i
+               });
+             system.Map.add(layer1)
+            }
+            // system.Map.add(system.FeatureLayer);
+
+            system.View = new MapView ({
+              container: "map",
+              map: system.Map,
+              // zoom: 12,
+              // center: [ 102.7346125, 25.0563901 ]
+            });
+            system.Graphic=Graphic;
+            system.Point=Point;
+            console.log(system.Map.layers);
+
+          }, reason => {
+            console.log (reason);
+          })
+      },
+        //manger
+        manager:function(){
+
+            this.$refs.slideBar.visible=true;
+            /*注入数据*/
+            this.eventList=CustomRouters.managerTab;
+            alert(this.eventList)
+        },
+        query:function(){
+
+        },
+        zaihai:function(){
+
+        },
+        tongji:function(){
+
+        },
+        edit:function(){
+
+        },
+        //  绘制图形
+      draw:function () {
+            system.draw();
+      },
+
+    /*擦除*/
+      erase:function () {
+          system.clear()
+      },
+        /*裁剪*/
+      clip:function (argument) {
+        /* body... */
+      },
+        /*刷新*/
+      refresh:function (argument) {
+        /* body... */
+      }
+
+    }
+  }
+
+  /*地图点击事件监听*/
+   setTimeout((e)=>{
+       /*按下鼠标移动 pointer-move*/
+       system.View.on("click", function(event){
+           // system.draw(event)
+           console.log(system.Map.toMap(new system.Point(event.x,event.y)));
+       });
+
+   },0)
+</script>
+
+<style scoped>
+    /*@import url('https://js.arcgis.com/4.8/esri/css/main.css');*/
+    @import url('https://js.arcgis.com/4.7/esri/css/main.css');
+    #map{
+     border: 1px solid gray;
+     width: 99.34%;
+     height: 600px;
+        z-index: -1
+ }
+    #btn{
+        width: 10%;
+        height: auto;
+        position: absolute;
+        left: 85%;
+        top: 40%;
+    }
+    #btn img{
+        width: 25px;
+        height: 30px;
+    }
+    #btn .item{
+
+        border-radius: 50%;
+        z-index: 9;
+        margin-top: 60%;
+        background-color: white
+    }
+</style>
