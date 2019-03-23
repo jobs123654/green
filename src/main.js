@@ -7,6 +7,7 @@ import {Toast} from 'mint-ui'
 import {MessageBox} from 'mint-ui'
 import animate from 'animate.css'
 
+
 Vue.use(mintUI);
 window.Toast=Toast;
 window.MessageBox=MessageBox;

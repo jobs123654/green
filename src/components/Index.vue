@@ -42,24 +42,29 @@
     <QueryForm ref="query" ></QueryForm>
 
    <!--草坪灌溉-->
-   <CaoGuanGai></CaoGuanGai>
+   <CaoGuanGai ref="cpgg" @query_well="query_well" @well_select_position="well_select_position"></CaoGuanGai>
  </div>
 
 </template>
 
 <script>
+
+
+
     import AppTab from './AppTab'
 
     import SlideBar from  './SlideBar'
 
     import QueryForm from './QueryForm'
     import CaoGuanGai from './panel/CaoGuanGai'
+
     import BZ from './map/BZ'
 
     import System from '../libs/System'
 
     import CustomRouters from '../libs/CustomRouters'
      import  CutForm from './map/CutForm'
+    import Data from '../config/Data'
 
 
 
@@ -157,6 +162,7 @@
             name:'灌溉',
             method:function (argument) {
                 /* body... */
+              obj.$refs.cpgg.show();
             }
         },
         {
@@ -180,13 +186,27 @@
             this.$refs.slideBar.changeView(CustomRouters.getItems1);
 
         },
+      /*****************************************************************/
         edit:function(){
 
+        },
+        //查询水井
+      query_well:function(i){
+        if (i<=100){
+          system.drawMarker(Data.wells.center,Data.wells.result,3)
+        }else{
+          system.drawMarker(Data.wells.center,Data.wells.result,5)
+        }
+      },
+        //自定义位置查询水井位置
+        well_select_position:function(){
+          system.key=2;
 
         },
         //  绘制图形
       draw:function () {
             system.draw();
+
       },
     /*擦除*/
       erase:function () {

@@ -11,6 +11,7 @@ export  default  class System {
         this.fn=null//回掉函数
         this.result=null
         this.animationControl=null
+
         /*加载瓦片地图*/
         var tileLayer = new BMap.TileLayer();
         tileLayer.getTilesUrl = function(tileCoord, zoom) {
@@ -67,9 +68,9 @@ export  default  class System {
         this.map.addEventListener("click", function(e){
 
 
-            
+
             /!*标注点*!/
-            
+
             let x=e.point.lng;
             let y=e.point.lat;
 
@@ -77,8 +78,8 @@ export  default  class System {
                console.log(e.point.lng,e.point.lat)
             data.push(e.point);
 
-            if(obj.key){
-            //     var marker = new BMap.Marker(e.point); 
+            if(obj.actionKey){
+            //     var marker = new BMap.Marker(e.point);
             // obj.map.addOverlay(marker);
             }
             /* 搜索工作单元 */
@@ -95,7 +96,7 @@ export  default  class System {
                         polygon.setStrokeColor('purple');
                         obj.map.addOverlay(polygon);
                         console.log(BMapLib.GeoUtils.getPolygonArea(polygon));
-                        
+
                         obj.result=(BMapLib.GeoUtils.getPolygonArea(polygon)/100000).toFixed(2);
                         if (obj.fn) {
                             obj.fn();
@@ -104,9 +105,19 @@ export  default  class System {
                         }
                     }
 
+
                     break;
+              //      草坪灌溉
+              case 2:
+                    var marker = new BMap.Marker(e.point);
+                obj.map.addOverlay(marker);
+                setTimeout((e)=>{
+
+                },300)
+                obj.key=0;
+              break;
             }
-            
+
 
 
         });
@@ -158,7 +169,7 @@ export  default  class System {
         }
 
     }
-   
+
     /*清除要素*/
     clear(){
            this.map.clearOverlays();
@@ -204,7 +215,7 @@ export  default  class System {
          })
      let path=[];
      let s=0.1;
-    
+
      path.push(new BMap.Point(0.090294 ,-0.102783));path.push(new BMap.Point(0.112127 ,-0.10205))
      path.push(new BMap.Point(0.113582 ,-0.187043));path.push(new BMap.Point(0.091022 ,-0.184845));
      let polygon=new BMap.Polygon(path);
@@ -219,7 +230,7 @@ export  default  class System {
         setTimeout(function (param) {
             o.animationControl= setInterval(function (param) {
                 apath.push(new BMap.Point(0.111001 ,i))
-                
+
                 let l=new BMap.Polyline(apath,{
                     strokeColor:'red',
                     strokeStyle:'dashed'
@@ -229,12 +240,25 @@ export  default  class System {
                 if (i.toString().indexOf('178')>-1) {
                     clearInterval(o.animationControl)
                 }
-               
+
                },300)
           },1000)
-        
-        
+
     }
+   // 批量绘制marker
+   drawMarker(c,ps,v){
+       let o=this
+       this.map.panTo(new BMap.Point(c[0],c[1]),{
+         noAnimation:false
+       })
+         ps.forEach((e,i)=>{
+           if (i<v){
+             var marker = new BMap.Marker(new BMap.Point(e[0],e[1]));
+             o.map.addOverlay(marker);
+           }
+
+         })
+   }
 
 
 }

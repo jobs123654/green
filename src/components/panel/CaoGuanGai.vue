@@ -15,19 +15,19 @@
         <div v-if="jVisible">
           <div class="form-group col-md-12">
             <label for="exampleInputEmail1">设置范围</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+            <input type="email" class="form-control" v-model="dis" id="exampleInputEmail1" placeholder="单位：米">
           </div>
 
           <div class="form-group">
             <label>
-              <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+              <input type="radio" name="optionsRadios"  id="optionsRadios1" @click="pointer=false" value="option1" checked>
               使用当前位置
             </label>
           </div>
           <div class="form-group">
             <label>
 
-              <input type="radio"  name="optionsRadios" id="optionsRadios2" value="option2">
+              <input type="radio"  @click="showPointer"  name="optionsRadios" id="optionsRadios2" value="option2">
 
              <span> 自定义位置&nbsp;&nbsp;&nbsp;</span>
             </label>
@@ -35,10 +35,10 @@
 
           <div class="checkbox" v-if="pointer">
             <label>
-              <span class="btn glyphicon glyphicon-hand-up"></span> 选择位置
+              <span class="btn glyphicon glyphicon-hand-up" @click="select"></span> 选择位置
             </label>
           </div>
-          <button  class="btn btn-default" @click="">查询</button>
+          <button  class="btn btn-default" @click="query">查询</button>
           <button  class="btn btn-default" @click="close">取消</button>
         </div>
 
@@ -62,7 +62,7 @@
               <span class="glyphicon glyphicon-hand-up"></span> 选择位置
             </label>
           </div>
-          <button  class="btn btn-default" @click="">查询</button>
+          <button  class="btn btn-default" @click="query">查询</button>
           <button  class="btn btn-default" @click="close">取消</button>
         </div>
       </div>
@@ -80,8 +80,9 @@
             jVisible:true,//水井
             pVisible:false,//喷头
             pointer:false,//显示位置获取工具
+            pos_checked:false,
             key:0,
-
+            dis:0,
           }
        } ,
       methods:{
@@ -91,6 +92,17 @@
          close:function () {
            this.visible=false
          },
+         query:function(){
+           this.close()
+           this.$emit('query_well',this.dis)
+
+         },
+         showPointer:function () {
+           this.pointer=true;
+         },
+          select:function () {
+            this.$emit('well_select_position',this.dis)
+          }
         }
     }
 </script>
@@ -107,7 +119,6 @@
    clear: both;
    width: 100%;
    height: 30px;
-
  }
  .radio{
 
