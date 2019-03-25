@@ -57,17 +57,10 @@ export  default  class System {
             fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
             strokeStyle: 'solid' //边线的样式，solid或dashed。
         };
-
-
-
         let obj=this;
-
         let data=[];
-
         /*左键*/
         this.map.addEventListener("click", function(e){
-
-
 
             /!*标注点*!/
 
@@ -104,14 +97,32 @@ export  default  class System {
                             MessageBox.alert((BMapLib.GeoUtils.getPolygonArea(polygon)/100000).toFixed(2)+'平方米', '测量结果');
                         }
                     }
-
-
                     break;
               //      草坪灌溉
               case 2:
-                    var marker = new BMap.Marker(e.point);
-                obj.map.addOverlay(marker);
-                setTimeout((e)=>{
+                    /*var marker = new BMap.Marker(e.point);
+                obj.map.addOverlay(marker);*/
+
+
+                setTimeout((item)=>{
+                  let c=new BMap.Circle(e.point,obj.getRealDis(400),{
+                    strokeColor:'purple',
+                    fillColor:'grey',
+                    fillOpacity:0.6,
+                    strokeWeight:'8px'
+                  });
+                  obj.map.addOverlay(c);
+                  // obj.map.panTo(e.point)
+                  obj.map.centerAndZoom(e.point,12)
+                  // obj.map.setZoom(12)
+
+
+                  var m = new BMap.Marker(new BMap.Point(e.point.lng-0.04,e.point.lat-0.03));
+
+                  var m1 = new BMap.Marker(new BMap.Point(e.point.lng+0.04,e.point.lat-0.04));
+                  obj.map.addOverlay(m);
+                  obj.map.addOverlay(m1);
+                //  查询well
 
                 },300)
                 obj.key=0;
@@ -169,11 +180,12 @@ export  default  class System {
         }
 
     }
-
+    getRealDis(v){
+      return v*16.5;
+    }
     /*清除要素*/
     clear(){
            this.map.clearOverlays();
-
         this.distanceToolObject.close();
         this.key=null;
         this.areaPath=[];
