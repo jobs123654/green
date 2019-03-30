@@ -16,8 +16,8 @@
              <span class=" btn btn-default glyphicon glyphicon-search"></span>
          </span>
          <!--刷新-->
-         <span class="item" @click="refresh">
-             <span class="btn btn-default glyphicon glyphicon-refresh"></span>
+         <span class="item" @click="reset">
+             <span class="btn btn-default glyphicon glyphicon-inbox"></span>
          </span>
          <!--擦除-->
 
@@ -30,8 +30,8 @@
          <span class="item" title="清除要素" @click="erase">
              <span class="btn btn-default glyphicon glyphicon-erase"></span>
          </span>
-
      </div>
+
      <!--底部导航-->
      <AppTab @manager="manager" @caoping="caoping" @bch="bch" @weisheng="weisheng"></AppTab>
 
@@ -42,21 +42,20 @@
     <QueryForm ref="query" ></QueryForm>
 
    <!--草坪灌溉-->
-   <CaoGuanGai ref="cpgg" @query_well="query_well" @well_select_position="well_select_position"></CaoGuanGai>
+   <!--<CaoGuanGai ref="cpgg" @query_well="query_well" @well_select_position="well_select_position" @well_satuation_set="well_satuation_set"></CaoGuanGai>-->
+   <Caopinggg ref="cpgg" @cpgg="cpgg"></Caopinggg>
  </div>
 
 </template>
 
 <script>
 
-
-
     import AppTab from './AppTab'
 
     import SlideBar from  './SlideBar'
 
-    import QueryForm from './QueryForm'
-    import CaoGuanGai from './panel/CaoGuanGai'
+    import QueryForm from './panel/QueryForm'
+    import CaoGuanGai from './panel/QueryForm'
 
     import BZ from './map/BZ'
 
@@ -65,8 +64,7 @@
     import CustomRouters from '../libs/CustomRouters'
      import  CutForm from './map/CutForm'
     import Data from '../config/Data'
-
-
+    import Caopinggg from './toolbar/Caopinggg'
 
    let system=null
   export default {
@@ -77,11 +75,11 @@
         /*定义事件列表*/
           eventList:[],
           query_show:false,
-
+          caopinglist:Data.caopingList
       }
     },
     components:{
-      AppTab,SlideBar,QueryForm,BZ,CutForm,CaoGuanGai,
+      AppTab,SlideBar,QueryForm,BZ,CutForm,Caopinggg,
     },
       created:function(){
 
@@ -93,12 +91,14 @@
       /*加载地图*/
       this.createMap();
 
+
     },
     methods:{
       createMap: function () {
           system=new System();
 
           CustomRouters.init(system);
+
           // alert(system)
       },
 //manger
@@ -154,7 +154,7 @@
             method:function (argument) {
                 /* body... */
                 obj.$refs.cutForm.visible=true
-                obj.$refs.cutForm.system=system
+
             }
 
         },
@@ -162,7 +162,7 @@
             name:'灌溉',
             method:function (argument) {
                 /* body... */
-              obj.$refs.cpgg.show();
+              obj.$refs.cpgg.visible=!obj.$refs.cpgg.visible;
             }
         },
         {
@@ -173,10 +173,7 @@
         },
     ];
             this.$refs.slideBar.changeView(item);
-
             // this.$refs.BZ.visible=true
-
-
         },
         bch:function(){
             this.$refs.slideBar.changeView(CustomRouters.getItems1);
@@ -187,16 +184,26 @@
 
         },
       /*****************************************************************/
-        edit:function(){
+      cpgg:function(e){
 
-        },
+        if (e){
+          system.key=3
+        } else{
+         system.loadTrace();
+
+        }
+      },
         //查询水井
-      query_well:function(i){
+        query_well:function(i){
         if (i<=100){
           system.drawMarker(Data.wells.center,Data.wells.result,3)
         }else{
           system.drawMarker(Data.wells.center,Data.wells.result,5)
         }
+      },
+      //场景设置
+      well_satuation_set:function(){
+        system.showHotPoint()
       },
         //自定义位置查询水井位置
         well_select_position:function(){
@@ -215,12 +222,13 @@
         /*裁剪*/
         search:function (argument) {
         /* body... */
-            this.$refs.query.show=true
+            this.$refs.query.visible=true
             this.$refs.query.system=system;
         },
-        /*刷新*/
-      refresh:function (argument) {
+        /*复位*/
+      reset:function (argument) {
         /* body... */
+          system.reset()
       },
         /*测距*/
         distance:function () {

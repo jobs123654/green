@@ -38,13 +38,13 @@
 
     methods:{
       login:function () {
-        Toast({ 
+        Toast({
          message: '登录中...', //提示内容分
        duration: 1800 , //持续时间（毫秒），若为 -1 则不会自动关闭
        iconClass: 'icon icon-success' , //icon 图标的类名
        })
         setTimeout((e)=>{
-           
+
           this.$router.push({
             path:'/Index',
             query: {

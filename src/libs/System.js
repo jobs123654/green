@@ -1,4 +1,5 @@
 import DataManager from './DataManager'
+import Data from "../config/Data";
 /*地图api*/
 export  default  class System {
     constructor(){
@@ -17,11 +18,15 @@ export  default  class System {
         tileLayer.getTilesUrl = function(tileCoord, zoom) {
             var x = tileCoord.x;
             var y = tileCoord.y;
-            return '../static/tiles/' + zoom + '/tile-' + x + '_' + y + '.png';
+            return 'http://localhost/tiles/' + zoom + '/tile-' + x + '_' + y + '.png';
         }
-        var MyMap = new BMap.MapType('MyMap', tileLayer, {minZoom: 5, maxZoom: 13});
+
+        var MyMap = new BMap.MapType('MyMap', tileLayer);
 
         this.map  = new BMap.Map('map', {mapType: MyMap});
+        setTimeout(function () {
+          this.map.setZoom(5)
+        }.bind(this),200)
 
         /*over*/
         // 创建地图实例
@@ -30,14 +35,12 @@ export  default  class System {
 
         this.map.addControl(new BMap.ScaleControl());
         this.map.addControl(new BMap.OverviewMapControl());
-        // 118.59931,39.21084
-        var point = new BMap.Point(0,0);
+        //
+        var point = new BMap.Point(118.59895,39.210264);
         // 中心点坐标
-        this.map.centerAndZoom(point, 7);
+        this.map.centerAndZoom(point, 4);
         let m=this.map;
-        setTimeout(function () {
-            m.setZoom(9);
-        },1200)
+
 
         var mapStyle ={
 
@@ -45,12 +48,12 @@ export  default  class System {
         };
         this.map.setMapStyle(mapStyle)
         this.map.enableScrollWheelZoom(true);
-        this.map.setMinZoom(8);
+
         // this.map.setMaxZoom(12);
         // this.map.setZoom(7);
         /*面样式*/
         this.polygonStyle= {
-            strokeColor:"red",    //边线颜色。
+            strokeColor:"red",    //边线颜色
             fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
             strokeWeight: 3,       //边线的宽度，以像素为单位。
             strokeOpacity: 0.8,    //边线透明度，取值范围0 - 1。
@@ -59,6 +62,19 @@ export  default  class System {
         };
         let obj=this;
         let data=[];
+      this.cpList=[];
+
+      Data.caopingList.forEach(function (i) {
+        let p=[]
+        i.bun.forEach(function (j) {
+          p.push(new BMap.Point(j[0],j[1]))
+        })
+        this.cpList.push(new BMap.Polygon(p))
+        this.map.addOverlay(new BMap.Polygon(p,{
+          fillOpacity:0.1,
+          strokeColor:'#91a87d',
+        }));
+      }.bind(this));
         /*左键*/
         this.map.addEventListener("click", function(e){
 
@@ -68,15 +84,12 @@ export  default  class System {
             let y=e.point.lat;
 
                    // 创建标注
-               console.log(e.point.lng,e.point.lat)
+            console.log(e.point.lng,e.point.lat)
             data.push(e.point);
 
-            if(obj.actionKey){
-            //     var marker = new BMap.Marker(e.point);
-            // obj.map.addOverlay(marker);
-            }
+
             /* 搜索工作单元 */
-            console.log(obj.map.getPanes())
+            // console.log(obj.map.getPanes())
 
             switch (obj.key) {
                 case 0:
@@ -90,11 +103,11 @@ export  default  class System {
                         obj.map.addOverlay(polygon);
                         console.log(BMapLib.GeoUtils.getPolygonArea(polygon));
 
-                        obj.result=(BMapLib.GeoUtils.getPolygonArea(polygon)/100000).toFixed(2);
+                        obj.result=(BMapLib.GeoUtils.getPolygonArea(polygon)/100000000).toFixed(2);
                         if (obj.fn) {
                             obj.fn();
                         }else{
-                            MessageBox.alert((BMapLib.GeoUtils.getPolygonArea(polygon)/100000).toFixed(2)+'平方米', '测量结果');
+                            MessageBox.alert((BMapLib.GeoUtils.getPolygonArea(polygon)/100000000).toFixed(2)+'平方米', '测量结果');
                         }
                     }
                     break;
@@ -127,8 +140,25 @@ export  default  class System {
                 },300)
                 obj.key=0;
               break;
-            }
+              //低洼区显示
+              case 3:
+                var pt = new BMap.Point(e.point.lng, e.point.lat);
+                obj.cpList.forEach(function (i) {
+                  var result = BMapLib.GeoUtils.isPointInPolygon(pt, i);
+                  if (result){
+                    obj.showHotPoint(i.Mn)
+                  }
+                })
+                obj.key=0;
+                break;
 
+              //轨迹捕捉显示周围水井
+              case 4:
+
+
+
+                break;
+            }
 
 
         });
@@ -252,7 +282,6 @@ export  default  class System {
                 if (i.toString().indexOf('178')>-1) {
                     clearInterval(o.animationControl)
                 }
-
                },300)
           },1000)
 
@@ -271,7 +300,93 @@ export  default  class System {
 
          })
    }
+//   判断浏览器是否支持canvas
+  isSupportCanvas(){
+       let e=document.createElement('canvas')
+      return e.getContent&&e.getContext('2d');
+  }
+//  复位
+  reset(){
+       this.map.reset();
+  }
+//   显示热力图
+  showHotPoint(points){
+    this. heatmapOverlay&&this. heatmapOverlay.hide();
+  let r=[],max=points[1].lng,min=points[0].lng,max1=points[0].lat,min1=points[2].lat;
+  let n=Math.random()*2*3;
+  for(let i=0;i<n;i++){
+    r.push({
+      lng:Math.random()*(max-min)+min,
+      lat:Math.random()*(max1-min1)+min1,
+      count:Math.random()*100+200
+    })
+  }
 
+    this.heatmapOverlay = new BMapLib.HeatmapOverlay({"radius":40});
+
+    this.map.addOverlay(this.heatmapOverlay);
+
+    this.heatmapOverlay.setDataSet({data:r,max:100});
+
+    var gradient = {};
+
+    this.heatmapOverlay.setOptions({"gradient": {
+        0:'#889fe4',
+        // .5:'#54f470',
+        // 1:'#ebf301'
+      }});
+
+    this.heatmapOverlay.show();
+  }
+  //草坪灌溉轨迹追踪
+  loadTrace(){
+       let marker=null,i=0;
+    let start=new BMap.Point(135.041534 ,41.115631),end=new BMap.Point(133.680134 ,41.073876)
+    let dlng=1,dlat=1;
+
+       if (this.animationControl){
+         clearInterval(this.animationControl)
+         this.animationControl=null;
+         this.map.removeOverlay(marker)
+
+         i=0;
+       }else{
+         this.animationControl=setInterval(function () {
+           if (marker){
+             this.map.removeOverlay(marker)
+
+           }
+
+           if (start.lng<=end.lng){
+             start.lat+=dlat*0.1
+             this.map.addOverlay(new BMap.Marker(new BMap.Point(133.652538,40.759862)));
+           }else{
+             start.lng-=dlng*0.1
+           }
+
+           let icon=new BMap.Icon('../../static/logo.png',{
+             width:100,
+             height:100,
+           },{
+             imageOffset:{
+               width:30,
+               height:37
+             }
+           });
+           icon.setImageSize({
+             width:30,
+             height:30
+           })
+           marker = new BMap.Marker(start,{
+             icon:icon
+           });
+           this.map.addOverlay(marker);
+
+         }.bind(this),1000)
+       }
+
+
+  }
 
 }
 
