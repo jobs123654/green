@@ -12,10 +12,10 @@
             <li @click="key=2;tVisible=true;sVisible=false;cVisible=false;" :class="key==2?'height':'normal'">工具查询</li>
           </ul>
         </div>
-        <!--水井查询-->
+        <!--草坪查询-->
         <div v-if="cVisible">
           <div class="form-group col-md-12">
-            <label for="exampleInputEmail1">设置范围</label>
+            <label for="exampleInputEmail1">输入编号</label>
             <input type="email" class="form-control" v-model="dis" id="exampleInputEmail1" placeholder="单位：米">
           </div>
 
@@ -44,7 +44,7 @@
         </div>
 
 
-        <!--喷头位置规划-->
+        <!--树木查询-->
         <div v-if="sVisible">
           <div class="form-group ">
             <label for="exampleInputEmail1">位置</label>
@@ -68,29 +68,31 @@
           <button  class="btn btn-default" @click="ok">确定</button>
           <button  class="btn btn-default" @click="close">取消</button>
         </div>
+           <!--工具查询-->
+        <div v-if="tVisible">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputFile">File input</label>
+            <input type="file" id="exampleInputFile">
+            <p class="help-block">Example block-level help text here.</p>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox"> Check me out
+            </label>
+          </div>
+          <button  class="btn btn-default" @click="query">查询</button>
+          <button  class="btn btn-default" @click="close">取消</button>
+        </div>
       </div>
-      <div v-if="tVisible">
-        <div class="form-group">
-          <label for="exampleInputEmail1">Email address</label>
-          <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
-        </div>
-        <div class="form-group">
-          <label for="exampleInputPassword1">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-        </div>
-        <div class="form-group">
-          <label for="exampleInputFile">File input</label>
-          <input type="file" id="exampleInputFile">
-          <p class="help-block">Example block-level help text here.</p>
-        </div>
-        <div class="checkbox">
-          <label>
-            <input type="checkbox"> Check me out
-          </label>
-        </div>
-        <button  class="btn btn-default" @click="query">查询</button>
-        <button  class="btn btn-default" @click="close">取消</button>
-      </div>
+
 
     </div>
 
@@ -138,16 +140,22 @@
 
 <style scoped>
 .root{
-  /*width: 80%;*/
+  width: 80%;
   position: absolute;
   left: 11%;
   top: 20%;
   z-index: 9;
 }
  .tab{
-
    width: 100%;
    height: 30px;
+
+ }
+ .tab ul{
+   padding: 0.2rem 0rem 0 0 ;
+   display: flex;
+   flex-direction: row;
+
  }
  .radio{
 
@@ -155,8 +163,10 @@
  }
   .tab li{
      list-style: none;
+
+
     width: 40%;
-    float: left;
+
     cursor: pointer;
   }
   .height{
