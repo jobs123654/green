@@ -4,93 +4,65 @@
     <div class="panel panel-default root" v-show="visible">
       <div class="panel-body">
 
+
+        <div class="form-group col-md-4">
+
+        <select class="form-control">
+          <option>草坪</option>
+          <option>树木</option>
+        </select>
+        </div>
+
         <!--tab-->
         <div class="tab">
           <ul>
-            <li @click="key=0;cVisible=true;sVisible=false;tVisible=false;" :class="key==0?'height':'normal' ">草坪查询</li>
-            <li @click="key=1;sVisible=true;cVisible=false;tVisible=false;" :class="key==1?'height':'normal'">树木查询</li>
-            <li @click="key=2;tVisible=true;sVisible=false;cVisible=false;" :class="key==2?'height':'normal'">工具查询</li>
+            <li @click="key=0;cVisible=true;sVisible=false;tVisible=false;showBtn=true" :class="key==0?'height':'normal' ">条件查询</li>
+            <li @click="key=1;sVisible=true;cVisible=false;tVisible=false;showBtn=false" :class="key==1?'height':'normal'">几何查询</li>
           </ul>
         </div>
+
         <!--草坪查询-->
         <div v-if="cVisible">
           <div class="form-group col-md-12">
-            <label for="exampleInputEmail1">输入编号</label>
-            <input type="email" class="form-control" v-model="dis" id="exampleInputEmail1" placeholder="单位：米">
-          </div>
 
-          <div class="form-group">
-            <label>
-              <input type="radio" name="optionsRadios"  id="optionsRadios1" @click="pointer=false" value="option1" checked>
-              使用当前位置
-            </label>
+            <input type="checkbox"  v-model="checks" value="0"  placeholder="单位：米">
+            <label for="exampleInputEmail1">待除草</label>
           </div>
-          <div class="form-group">
-            <label>
+          <div class="form-group col-md-12">
 
-              <input type="radio"  @click="showPointer"  name="optionsRadios" id="optionsRadios2" value="option2">
-
-             <span> 自定义位置&nbsp;&nbsp;&nbsp;</span>
-            </label>
+            <input type="checkbox"  v-model="checks"value="1" placeholder="单位：米">
+            <label for="exampleInputEmail1">待灌溉</label>
           </div>
+          <div class="form-group col-md-12">
 
-          <div class="checkbox" v-if="pointer">
-            <label>
-              <span class="btn glyphicon glyphicon-hand-up" @click="select"></span> 选择位置
-            </label>
+            <input type="checkbox"  v-model="checks"  value="2" placeholder="单位：米">
+            <label for="exampleInputEmail1">待除草</label>
           </div>
-          <button  class="btn btn-default" @click="query">查询</button>
-          <button  class="btn btn-default" @click="close">取消</button>
+          <div class="form-group col-md-12">
+
+            <input type="checkbox"  v-model="checks" value="3" placeholder="单位：米">
+            <label for="exampleInputEmail1">待施肥</label>
+          </div>
         </div>
-
 
         <!--树木查询-->
         <div v-if="sVisible">
           <div class="form-group ">
-            <label for="exampleInputEmail1">位置</label>
-            <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Email">
+            <label for="exampleInputEmail1" >点选</label>
+            <a href="#" @click="dotQuery" class="btn btn-primary glyphicon glyphicon-hand-up"></a>
+          </div>
+          <div class="form-group ">
+            <label for="exampleInputEmail1" >圆选</label>
+            <a href="#" @click="circleQuery" class="btn btn-primary glyphicon glyphicon-record"></a>
           </div>
 
-          <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputFile">File input</label>
-            <input type="file" id="exampleInputFile2">
-            <p class="help-block">Example block-level help text here.</p>
-          </div>
-          <div class="checkbox">
-            <label>
-              <span class="glyphicon glyphicon-hand-up"></span> 选择位置
-            </label>
-          </div>
-          <button  class="btn btn-default" @click="ok">确定</button>
-          <button  class="btn btn-default" @click="close">取消</button>
         </div>
            <!--工具查询-->
-        <div v-if="tVisible">
-          <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputFile">File input</label>
-            <input type="file" id="exampleInputFile">
-            <p class="help-block">Example block-level help text here.</p>
-          </div>
-          <div class="checkbox">
-            <label>
-              <input type="checkbox"> Check me out
-            </label>
-          </div>
-          <button  class="btn btn-default" @click="query">查询</button>
+        <div v-show="showBtn">
+          <button  class="btn btn-default" @click="query" >确定</button>
           <button  class="btn btn-default" @click="close">取消</button>
         </div>
+
       </div>
 
 
@@ -110,11 +82,16 @@
             tVisible:false,//工具
             pointer:false,//显示位置获取工具
             pos_checked:false,
+            showBtn:true,
             key:0,
             dis:0,
+            checks:[],
           }
        } ,
       methods:{
+          ok(){
+
+          },
          show:function(){
            this.visible=true
          },
@@ -123,7 +100,7 @@
          },
          query:function(){
            this.close()
-           this.$emit('query_well',this.dis)
+           this.$emit('query',this.dis)
          },
          showPointer:function () {
            this.pointer=true;
@@ -131,9 +108,14 @@
           select:function () {
             this.$emit('well_select_position',this.dis)
           },
-          ok(){
-            this.$emit('well_satuation_set')
-          }
+         dotQuery(){
+           this.$emit('dotQuery')
+           this.close()
+         },
+         circleQuery(){
+           this.$emit('circleQuery')
+           this.close()
+         }
         }
     }
 </script>
@@ -149,9 +131,9 @@
  .tab{
    width: 100%;
    height: 30px;
-
  }
  .tab ul{
+   margin-left: 17%;
    padding: 0.2rem 0rem 0 0 ;
    display: flex;
    flex-direction: row;
@@ -163,10 +145,10 @@
  }
   .tab li{
      list-style: none;
-
-
     width: 40%;
-
+    cursor: pointer;
+  }
+  a{
     cursor: pointer;
   }
   .height{

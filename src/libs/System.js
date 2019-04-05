@@ -2,7 +2,7 @@ import DataManager from './DataManager'
 import Data from "../config/Data";
 /*地图api*/
 export  default  class System {
-    constructor(){
+    constructor(ins){
         this.map=null;
         this.distanceToolObject=null;//测距对象
         this.areaPath=[];//路径点集合
@@ -12,6 +12,7 @@ export  default  class System {
         this.fn=null//回掉函数
         this.result=null
         this.animationControl=null
+        this.instance=ins
 
         /*加载瓦片地图*/
         var tileLayer = new BMap.TileLayer();
@@ -35,8 +36,9 @@ export  default  class System {
 
         this.map.addControl(new BMap.ScaleControl());
         this.map.addControl(new BMap.OverviewMapControl());
-        //
-        var point = new BMap.Point(118.59895,39.210264);
+        // 118.59895,39.210264
+        var point = new BMap.Point(130.593988,46.365911);
+
         // 中心点坐标
         this.map.centerAndZoom(point, 4);
         let m=this.map;
@@ -77,11 +79,10 @@ export  default  class System {
       }.bind(this));
         /*左键*/
         this.map.addEventListener("click", function(e){
-
             /!*标注点*!/
-
-            let x=e.point.lng;
+          let x=e.point.lng;
             let y=e.point.lat;
+
 
                    // 创建标注
             console.log(e.point.lng,e.point.lat)
@@ -128,8 +129,6 @@ export  default  class System {
                   // obj.map.panTo(e.point)
                   obj.map.centerAndZoom(e.point,12)
                   // obj.map.setZoom(12)
-
-
                   var m = new BMap.Marker(new BMap.Point(e.point.lng-0.04,e.point.lat-0.03));
 
                   var m1 = new BMap.Marker(new BMap.Point(e.point.lng+0.04,e.point.lat-0.04));
@@ -152,12 +151,14 @@ export  default  class System {
                 obj.key=0;
                 break;
 
-              //轨迹捕捉显示周围水井
-              case 4:
-
-
-
+              //点选查询
+               case 4:
+                 obj.instance.$store.commit('setInfoBox',{})
+                 obj.instance.$store.commit('setInfoBox',Data.query.attribute[0])
+                 obj.key=0;
                 break;
+            //    圆选
+                    
             }
 
 
@@ -261,6 +262,7 @@ export  default  class System {
      path.push(new BMap.Point(0.090294 ,-0.102783));path.push(new BMap.Point(0.112127 ,-0.10205))
      path.push(new BMap.Point(0.113582 ,-0.187043));path.push(new BMap.Point(0.091022 ,-0.184845));
      let polygon=new BMap.Polygon(path);
+
         polygon.setStrokeColor('blue');
         polygon.setFillColor('grey');
         this.map.addOverlay(polygon);
@@ -354,9 +356,7 @@ export  default  class System {
          this.animationControl=setInterval(function () {
            if (marker){
              this.map.removeOverlay(marker)
-
            }
-
            if (start.lng<=end.lng){
              start.lat+=dlat*0.1
              this.map.addOverlay(new BMap.Marker(new BMap.Point(133.652538,40.759862)));
@@ -381,12 +381,41 @@ export  default  class System {
              icon:icon
            });
            this.map.addOverlay(marker);
-
          }.bind(this),1000)
        }
+  }
+//  设置中心
+  focus(e){
+    this.map.panTo(new BMap.Point(e[0] ,e[1]))
+    this.map.setZoom(7)
+  }
+// 画面
+  drawPolygon(geo){
+    let path=[];
+    if (geo.length==1){
+      this.focus([geo[0][0][0],geo[0][0][1]])
+    }
+    geo.forEach(function (i) {
+       i.forEach(function (j) {
+         path.push(new BMap.Point(j[0] ,j[1]))
+       })
+      let polygon=new BMap.Polygon(path);
+      polygon.setStrokeColor('blue');
+      polygon.setFillColor('#fff');
+      polygon.setFillOpacity(0.5)
+
+      this.map.addOverlay(polygon);
+
+      polygon.addEventListener('click', this.polygonClick)
+      path=[];
+    }.bind(this))
 
 
   }
+  polygonClick(e){
+       alert(1)
+  }
+
 
 }
 

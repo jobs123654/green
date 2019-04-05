@@ -4,7 +4,8 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
-     caopingList:[]
+     caopingList:[],
+     infoBox:{},
   },
   mutations:{
     setCaopingList(state,value){
@@ -12,7 +13,11 @@ export default new Vuex.Store({
     },
     pushCaoping(state,v){
       state.caopingList.push(v);
-    }
+    },
+
+    setInfoBox(state,v){
+      state.infoBox=v;
+    },
   },
   getters:{
 

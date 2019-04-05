@@ -7,43 +7,20 @@
      <!--补植-->
      <BZ ref="BZ"></BZ>
      <!-- 修剪草坪 -->
+    <Toolbar @toolbar="toolbar" ref="toolbar"></Toolbar>
      <CutForm ref="cutForm"></CutForm>
-
-     <div id="btn">
-          <!--裁剪-->
-         <span class="item" @click="search">
-             <!--<img src="../assets/jd.png">-->
-             <span class=" btn btn-default glyphicon glyphicon-search"></span>
-         </span>
-         <!--刷新-->
-         <span class="item" @click="reset">
-             <span class="btn btn-default glyphicon glyphicon-inbox"></span>
-         </span>
-         <!--擦除-->
-
-         <span class="item"  @click="distance">
-             <span class="btn btn-default glyphicon glyphicon-resize-full"></span>
-         </span>
-         <span class="item" @click="area">
-             <span class="btn btn-default glyphicon glyphicon-stop"></span>
-         </span>
-         <span class="item" title="清除要素" @click="erase">
-             <span class="btn btn-default glyphicon glyphicon-erase"></span>
-         </span>
-     </div>
-
      <!--底部导航-->
      <AppTab @manager="manager" @caoping="caoping" @bch="bch" @weisheng="weisheng"></AppTab>
-
      <!--侧滑栏-->
      <SlideBar ref="slideBar" ></SlideBar>
-
      <!--查询表单-->
-    <QueryForm ref="query" ></QueryForm>
-
+    <QueryForm ref="query" @dotQuery="dotQuery" @circleQuery="circleQuery" @query="query"></QueryForm>
    <!--草坪灌溉-->
    <!--<CaoGuanGai ref="cpgg" @query_well="query_well" @well_select_position="well_select_position" @well_satuation_set="well_satuation_set"></CaoGuanGai>-->
    <Caopinggg ref="cpgg" @cpgg="cpgg"></Caopinggg>
+   <!--信息框-->
+   <InfoBox :list="infoBox" ref="InfoBox"></InfoBox>
+
  </div>
 
 </template>
@@ -55,8 +32,7 @@
     import SlideBar from  './SlideBar'
 
     import QueryForm from './panel/QueryForm'
-    import CaoGuanGai from './panel/QueryForm'
-
+    import InfoBox from './panel/InfoBox'
     import BZ from './map/BZ'
 
     import System from '../libs/System'
@@ -65,7 +41,7 @@
      import  CutForm from './map/CutForm'
     import Data from '../config/Data'
     import Caopinggg from './toolbar/Caopinggg'
-
+    import Toolbar from './toolbar/Toolbar'
    let system=null
   export default {
     name: 'Index',
@@ -79,38 +55,63 @@
       }
     },
     components:{
-      AppTab,SlideBar,QueryForm,BZ,CutForm,Caopinggg,
-    },
+      AppTab,SlideBar,QueryForm,BZ,CutForm,Caopinggg,Toolbar,InfoBox
+      },
       created:function(){
 
       },
+
     //组件装载之后
     mounted:function(){
         /*初始化事件*/
-
       /*加载地图*/
       this.createMap();
-
-
+    },
+    computed:{
+      infoBox:function () {
+        return this.$store.state.infoBox;
+      }
+    },
+    watch:{
+      infoBox:function () {
+        this.$refs.InfoBox.show()
+      }
     },
     methods:{
+      toolbar:function(n){
+        switch (n) {
+          case 'search':
+            this.search();
+            break;
+          case 'reset':
+            this.reset()
+            break;
+          case 'distance':
+            this.distance()
+            break;
+          case 'area':
+            this.area()
+            break;
+          case 'erase':
+            this.erase()
+            break;
+        }
+      },
       createMap: function () {
-          system=new System();
-
+          system=new System(this);
           CustomRouters.init(system);
-
           // alert(system)
       },
 //manger
         manager:function(){
             let that=this
             this.$refs.slideBar.changeView([
-        {
-            name:'补植',
-            method:function (argument) {
+            {
+                name:'补植',
+                method:function (argument) {
 
-            }
-        },
+                }
+            },
         {
             name:'修剪',
             method:function (argument) {
@@ -140,7 +141,6 @@
             name:'补植',
             method:function (argument) {
                 /* 画面 */
-
                 // obj.$refs.BZ.system=system;
                 system.area(function (argument) {
                     obj.$refs.BZ.visible=true
@@ -200,7 +200,7 @@
         }else{
           system.drawMarker(Data.wells.center,Data.wells.result,5)
         }
-      },
+        },
       //场景设置
       well_satuation_set:function(){
         system.showHotPoint()
@@ -208,12 +208,10 @@
         //自定义位置查询水井位置
         well_select_position:function(){
           system.key=2;
-
         },
         //  绘制图形
       draw:function () {
-            system.draw();
-
+            system.draw()
       },
     /*擦除*/
       erase:function () {
@@ -226,10 +224,10 @@
             this.$refs.query.system=system;
         },
         /*复位*/
-      reset:function (argument) {
-        /* body... */
-          system.reset()
-      },
+        reset:function (argument) {
+          /* body... */
+            system.reset()
+        },
         /*测距*/
         distance:function () {
          system.distance()
@@ -237,7 +235,19 @@
         /*计算面积*/
         area:function () {
            system.area(null)
-        }
+        },
+        query(){
+          system.drawPolygon(Data.query.caoping);
+        },
+      //点选
+      dotQuery(){
+        system.key=4
+      },
+      //圆选
+      circleQuery(){
+        system.key=5
+      },
+
     }
   }
 
@@ -252,22 +262,5 @@
      height: 584px;
         z-index: -1
  }
-    #btn{
-        width: 10%;
-        height: auto;
-        position: absolute;
-        left: 85%;
-        top: 20%;
-    }
-    #btn img{
-        width: 25px;
-        height: 30px;
-    }
-    #btn .item{
-        display: block;
-        border-radius: 50%;
-        z-index: 9;
-        margin-top: 30%;
-        background-color: white;
-    }
+
 </style>

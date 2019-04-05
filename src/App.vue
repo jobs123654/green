@@ -30,14 +30,16 @@
   import Index from './components/Index'
   import router from './router/index'
     import Header from './components/Header'
+    import store from './store'
 
 
 export default {
   name: 'App',
   components: { Header,AppTab},
   router,
+  store,
   mounted:function(){
-  
+
   },
   methods:{
     slide:function () {
