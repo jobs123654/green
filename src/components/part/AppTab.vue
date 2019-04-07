@@ -20,14 +20,14 @@
        <div class="bottom-bar">
            <mt-tabbar v-model="selected">
                <mt-tab-item id="one">
-                   <img slot="icon" src="../assets/manager.png">
+                   <img slot="icon" src="../../assets/manager.png">
                    <span  @click='yh'>
                      树木养护
                    </span>
 
                </mt-tab-item>
                <mt-tab-item id="two">
-                   <img slot="icon" src="../assets/query.png">
+                   <img slot="icon" src="../../assets/query.png">
 
                    <span @click="caoping">
                      草坪养护
@@ -35,14 +35,14 @@
                </mt-tab-item>
 
                <mt-tab-item id="three">
-                   <img slot="icon" src="../assets/yuj.png">
+                   <img slot="icon" src="../../assets/yuj.png">
                    <!-- <router-link  class="item" to="User"></router-link> -->
                    <span @click="bch">
                      病虫防治
                    </span>
                </mt-tab-item>
                 <mt-tab-item id="four">
-                   <img slot="icon" src="../assets/chart.png">
+                   <img slot="icon" src="../../assets/chart.png">
                    <span @click="weisheng">
                     卫生保洁
                    </span>
@@ -72,10 +72,15 @@
     },
     methods:{
           yh:function () {
-            this.$emit('manager');
+            // this.$emit('manager');
+              this.$parent.showTreeMenu=!this.$parent.showTreeMenu;
+              this.$parent.showCpMenu=false;
           },
         caoping:function () {
-            this.$emit('caoping');
+            // this.$emit('caoping');
+            this.$parent.showCpMenu=!this.$parent.showCpMenu;
+            this.$parent.showTreeMenu=false;
+
         },
         bch:function () {
             this.$emit('bch');

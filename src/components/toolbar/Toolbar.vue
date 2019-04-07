@@ -1,45 +1,49 @@
 <template>
   <div id="btn">
-    <!--裁剪-->
-    <span class="item" @click="select('search')">
-             <!--<img src="../assets/jd.png">-->
-             <span class=" btn btn-default glyphicon glyphicon-search"></span>
-         </span>
-    <!--刷新-->
-    <span class="item" @click="select('reset')">
-             <span class="btn btn-default glyphicon glyphicon-inbox"></span>
-         </span>
-    <!--擦除-->
-    <span class="item"  @click="select('distance')">
-             <span class="btn btn-default glyphicon glyphicon-resize-full"></span>
-         </span>
-    <span class="item" @click="select('area')">
-             <span class="btn btn-default glyphicon glyphicon-stop"></span>
-         </span>
-    <span class="item" title="清除要素" @click="select('erase')">
-             <span class="btn btn-default glyphicon glyphicon-erase"></span>
+        <span class="item" v-for="(item,i)  in menu" :title="item.name" @mouseenter="showInfo" @mouseleave="closeInfo" @click="select(item.name)">
+             <span :class="item.style"></span>
+             <!--<Tip v-show="isShow" :info="item.title"></Tip>-->
          </span>
   </div>
 </template>
 
 <script>
+    import Info from '../box/Info'
+    import Tip from '../box/Tip'
     export default {
         name: "toolbar",
+        props:{
+          menu:Array,
+        },
+        data(){
+            return{
+                isShow:true
+            }
+        },
+        components:{
+          Info,Tip,
+        },
         methods:{
           select(n){
             this.$emit('toolbar',n);
-          }
+          },
+            showInfo(){
+
+                this.isShow=true
+            },
+            closeInfo(){
+                this.isShow=false
+            }
         }
     }
 </script>
 
 <style scoped>
   #btn{
-    width: 10%;
+    width: 8%;
     height: auto;
-    position: absolute;
-    left: 85%;
-    top: 20%;
+
+
   }
   #btn img{
     width: 25px;

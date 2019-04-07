@@ -1,14 +1,12 @@
 <template>
     <div class="container">
         <div id="img" style="text-align: center">
-            <img src="../assets/leaf.png"  alt="">
+            <img src="../../assets/leaf.png"  alt="">
         </div>
         <div id="form" class="form-vertial">
             <div class="form-group">
-
-
                 <div class="col-md-3">
-                    <input type="text" class="form-control"  id="exampleInputEmail1" placeholder="账号" >
+                    <input type="text" class="form-control"  v-model="user.zh" id="exampleInputEmail1" placeholder="账号" >
                 </div>
 
             </div>
@@ -16,7 +14,7 @@
 
                 <div class="col-md-2">
                     <i class="pwd"></i>
-                    <input type="password" class="form-control" id="exampleInputPassword12" placeholder="密码">
+                    <input type="password" class="form-control" v-model="user.pwd" id="exampleInputPassword12" placeholder="密码">
                 </div>
             </div>
             <div class="form-group ">
@@ -32,10 +30,18 @@
 </template>
 
 <script>
-    import Header from './Header'
-  export default {
+    import Header from '../part/Header'
+    import config from '../../config/config'
+    export default {
     name: 'Login',
-
+    data(){
+      return{
+          user:{
+              zh:'',
+              pwd:''
+          }
+      }
+    },
     methods:{
       login:function () {
         Toast({
@@ -44,13 +50,14 @@
        iconClass: 'icon icon-success' , //icon 图标的类名
        })
         setTimeout((e)=>{
-
           this.$router.push({
             path:'/Index',
             query: {
               visible: true
             }
           });
+          console.log(Object.assign(config.person,this.user))
+          this.$store.commit('setPerson',Object.assign(config.person,this.user))
         },2000)
 
       }

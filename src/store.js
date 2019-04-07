@@ -6,6 +6,9 @@ export default new Vuex.Store({
   state: {
      caopingList:[],
      infoBox:{},
+      work:{},
+      person:{},
+      worklist:[]
   },
   mutations:{
     setCaopingList(state,value){
@@ -15,9 +18,18 @@ export default new Vuex.Store({
       state.caopingList.push(v);
     },
 
-    setInfoBox(state,v){
+      setWorklist(state,v){
+    state.worklist=v;
+       },
+          setInfoBox(state,v){
       state.infoBox=v;
     },
+      setPerson(state,v){
+          state.person=v;
+      },
+      setWork(state,v){
+          state.work=v;
+      },
   },
   getters:{
 

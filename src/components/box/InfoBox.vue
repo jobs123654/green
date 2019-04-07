@@ -9,7 +9,7 @@
       <div class="panel-body">
         <ul class="list-group">
           <li class="list-group-item" v-for="(item,i) in list">
-             {{item.name}}&nbsp;&nbsp;&nbsp;{{item.value}}
+             {{i}}&nbsp;&nbsp;&nbsp;{{list[i]}}
           </li>
         </ul>
       </div>
@@ -29,9 +29,7 @@
          list:Object,
        },
       methods:{
-          ok(){
-
-          },
+          
          show:function(){
            this.visible=true
          },

@@ -7,41 +7,50 @@
      <!--补植-->
      <BZ ref="BZ"></BZ>
      <!-- 修剪草坪 -->
-    <Toolbar @toolbar="toolbar" ref="toolbar"></Toolbar>
+     <Toolbar class="menu" :menu="menu" @toolbar="toolbar" ref="toolbar"></Toolbar>
+     <Toolbar class="cpMenu" v-show="showCpMenu" :menu="cpMenu" @toolbar="toolbar" ref="toolbar"></Toolbar>
+     <Toolbar class="treeMenu" :menu="treeMenu" v-show="showTreeMenu" @toolbar="toolbar" ref="toolbar"></Toolbar>
+
      <CutForm ref="cutForm"></CutForm>
      <!--底部导航-->
-     <AppTab @manager="manager" @caoping="caoping" @bch="bch" @weisheng="weisheng"></AppTab>
+     <AppTab ref="tb"  @bch="bch" @weisheng="weisheng"></AppTab>
      <!--侧滑栏-->
      <SlideBar ref="slideBar" ></SlideBar>
      <!--查询表单-->
-    <QueryForm ref="query" @dotQuery="dotQuery" @circleQuery="circleQuery" @query="query"></QueryForm>
+    <QueryForm ref="query" @dotQuery="dotQuery" @circleQuery="circleQuery" @querywell="querywell" @query="query"></QueryForm>
    <!--草坪灌溉-->
    <!--<CaoGuanGai ref="cpgg" @query_well="query_well" @well_select_position="well_select_position" @well_satuation_set="well_satuation_set"></CaoGuanGai>-->
    <Caopinggg ref="cpgg" @cpgg="cpgg"></Caopinggg>
    <!--信息框-->
    <InfoBox :list="infoBox" ref="InfoBox"></InfoBox>
-
+   <!-- 作业单 -->
+     <Work ref='work' :work="work"></Work>
+     <!--提示框-->
+     <Info ref="info"></Info>
  </div>
 
 </template>
 
 <script>
 
-    import AppTab from './AppTab'
+    import AppTab from '../part/AppTab'
 
-    import SlideBar from  './SlideBar'
+    import SlideBar from '../part/SlideBar'
 
-    import QueryForm from './panel/QueryForm'
-    import InfoBox from './panel/InfoBox'
-    import BZ from './map/BZ'
+    import QueryForm from '../box/QueryForm'
+    import InfoBox from '../box/InfoBox'
+    import Work from '../box/Work'
+    import BZ from '../map/BZ'
 
-    import System from '../libs/System'
-
-    import CustomRouters from '../libs/CustomRouters'
-     import  CutForm from './map/CutForm'
-    import Data from '../config/Data'
-    import Caopinggg from './toolbar/Caopinggg'
-    import Toolbar from './toolbar/Toolbar'
+    import System from '../../libs/System'
+    import common from '../../libs/common'
+    import CustomRouters from '../../libs/CustomRouters'
+     import  CutForm from '../map/CutForm'
+    import Data from '../../config/Data'
+    import Caopinggg from '../toolbar/Caopinggg'
+    import Toolbar from '../toolbar/Toolbar'
+    import Info from '../box/Info'
+    import config from '../../config/config'
    let system=null
   export default {
     name: 'Index',
@@ -49,13 +58,20 @@
     data:function () {
       return{
         /*定义事件列表*/
+          work:config.work,
+          menu:config.menu,
           eventList:[],
           query_show:false,
-          caopinglist:Data.caopingList
+          caopinglist:Data.caopingList,
+          cpMenu:config.cpMenu,
+          treeMenu:config.treeMenu,
+          showTreeMenu:false,
+          showCpMenu:false,
       }
     },
     components:{
-      AppTab,SlideBar,QueryForm,BZ,CutForm,Caopinggg,Toolbar,InfoBox
+      AppTab,SlideBar,QueryForm,BZ,CutForm,Caopinggg,Toolbar,InfoBox,Work,
+        Info,
       },
       created:function(){
 
@@ -72,6 +88,7 @@
         return this.$store.state.infoBox;
       }
     },
+
     watch:{
       infoBox:function () {
         this.$refs.InfoBox.show()
@@ -84,7 +101,8 @@
             this.search();
             break;
           case 'reset':
-            this.reset()
+            // this.reset()
+              system.addMan()
             break;
           case 'distance':
             this.distance()
@@ -95,6 +113,32 @@
           case 'erase':
             this.erase()
             break;
+            case 'work':
+            // this.$refs.work.show()
+            system.key=6;
+            this.$refs.info.show('请选择操作对象!');
+            break;
+             case '补植':
+                // obj.$refs.BZ.system=system;
+                system.area(function (argument) {
+                    this.$refs.BZ.visible=true
+                    this.$refs.BZ.area=system.result
+                }.bind(this));
+                break;
+               case '灌溉c':
+                // this.$refs.cpgg.visible=!this.$refs.cpgg.visible;
+                   this.createGood();
+                break;
+               case '除草':
+                this.$refs.cutForm.visible=true
+                break;
+                case '施肥':
+                break;
+
+            case '修剪':
+                break;
+            case '灌溉t':
+                break;
         }
       },
       createMap: function () {
@@ -102,88 +146,35 @@
           CustomRouters.init(system);
           // alert(system)
       },
-//manger
-        manager:function(){
-            let that=this
-            this.$refs.slideBar.changeView([
-            {
-                name:'补植',
-                method:function (argument) {
-
-                }
-            },
-        {
-            name:'修剪',
-            method:function (argument) {
-                /* body... */
-            }
-
-        },
-        {
-            name:'灌溉',
-            method:function (argument) {
-                /* body... */
-            }
-        },
-        {
-            name:'施肥',
-            method:function (argument) {
-                /* body... */
-            }
-        },
-    ]);
-          },
-        caoping:function(){
-          let obj=this
-
-            let item=[
-        {
-            name:'补植',
-            method:function (argument) {
-                /* 画面 */
-                // obj.$refs.BZ.system=system;
-                system.area(function (argument) {
-                    obj.$refs.BZ.visible=true
-                    obj.$refs.BZ.area=system.result
-                });
-                /*显示面板*/
-            }
-        },
-        {
-            name:'修剪',
-            method:function (argument) {
-                /* body... */
-                obj.$refs.cutForm.visible=true
-
-            }
-
-        },
-        {
-            name:'灌溉',
-            method:function (argument) {
-                /* body... */
-              obj.$refs.cpgg.visible=!obj.$refs.cpgg.visible;
-            }
-        },
-        {
-            name:'施肥',
-            method:function (argument) {
-                /* body... */
-            }
-        },
-    ];
-            this.$refs.slideBar.changeView(item);
-            // this.$refs.BZ.visible=true
-        },
+      querywell(){
+         let map=system.map;
+          var marker = new BMap.Marker(Data.wells.near);        // 创建标注
+          // data.push(e.point);
+          map.addOverlay(marker);
+      },
         bch:function(){
             this.$refs.slideBar.changeView(CustomRouters.getItems1);
-
         },
         weisheng:function(){
             this.$refs.slideBar.changeView(CustomRouters.getItems1);
 
         },
       /*****************************************************************/
+      createGood(){
+        let map=system.map;
+        console.log(Data.wells)
+        let n=Data.wells.near,n1=Data.wells.near1;
+        let c=Data.wells.c,c1=Data.wells.c1;
+          // data.push(e.point);
+          let style={strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5}
+          map.addOverlay(new BMap.Marker(n1));
+          map.addOverlay(new BMap.Marker(n));
+          // map.addOverlay(new BMap.Marker(c1));
+          // map.addOverlay(new BMap.Marker(c));
+          map.addOverlay(new BMap.Polyline([new BMap.Point(n.lng, n.lat),new BMap.Point(c.lng, c.lat)],style));
+          style.strokeCole='yellow'
+          map.addOverlay(new BMap.Polyline([new BMap.Point(n1.lng, n1.lat),new BMap.Point(c1.lng, c1.lat)],style));
+      },
       cpgg:function(e){
 
         if (e){
@@ -247,7 +238,6 @@
       circleQuery(){
         system.key=5
       },
-
     }
   }
 
@@ -261,6 +251,14 @@
      width: 99.34%;
      height: 584px;
         z-index: -1
- }
-
+   }
+    .menu,.cpMenu,.treeMenu{
+        position: absolute;
+        left: 86%;
+    }
+    .menu{top: 10%;}
+    .cpMenu{
+        top: 36%;
+    }
+    .treeMenu{top:36%}
 </style>

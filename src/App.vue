@@ -26,12 +26,10 @@
 </template>
 
 <script>
-    import AppTab from './components/AppTab'
-  import Index from './components/Index'
+    import AppTab from './components/part/AppTab'
   import router from './router/index'
-    import Header from './components/Header'
+    import Header from './components/part/Header'
     import store from './store'
-
 
 export default {
   name: 'App',
