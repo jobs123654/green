@@ -44,7 +44,7 @@
                 <mt-tab-item id="four">
                    <img slot="icon" src="../../assets/chart.png">
                    <span @click="weisheng">
-                    卫生保洁
+                    提交作业
                    </span>
                </mt-tab-item>
                <!-- <mt-tab-item id="five">

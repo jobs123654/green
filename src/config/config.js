@@ -77,15 +77,15 @@ export default {
         {
             title:'补植成本计算',
             name:`补植`,
-            style:`btn btn-default glyphicon glyphicon-erase`
+            style:`btn btn-default glyphicon glyphicon-grain`
         },
 		/*实时水井显示 最佳灌溉方案*/
         {
             title:'显示草坪灌溉方案',
             name:`灌溉c`,
-            style:`btn btn-default glyphicon glyphicon-erase`
+            style:`btn btn-default glyphicon glyphicon-tint`
         },
-        {
+        /*{
             name:`除草`,//？？？
             style:`btn btn-default glyphicon glyphicon-erase`
         },
@@ -93,24 +93,22 @@ export default {
             title:'草坪喷施建议',
             name:`施肥`,
             style:`btn btn-default glyphicon glyphicon-erase`
-        },
+        },*/
 	],
 	treeMenu:[
-        {
+        /*{
             title:"",
             name:`修剪`,
-            style:`btn btn-default glyphicon glyphicon-erase`
-        },
+            style:`btn btn-default glyphicon glyphicon-scissors`
+        },*/
         {
         	/*最佳灌溉路线分析*/
             title:"最佳灌溉路线",
             name:`灌溉t`,
-            style:`btn btn-default glyphicon glyphicon-erase`
+            style:`btn btn-default glyphicon glyphicon-gbp`
         },
-        {
-            name:``,
-            style:`btn btn-default glyphicon glyphicon-erase`
-        },
-	]
+
+	],
+
 
 }

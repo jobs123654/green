@@ -27,6 +27,8 @@
      <Work ref='work' :work="work"></Work>
      <!--提示框-->
      <Info ref="info"></Info>
+     <!--进度条-->
+     <Progress class="progress" ref="progress"></Progress>
  </div>
 
 </template>
@@ -50,6 +52,7 @@
     import Caopinggg from '../toolbar/Caopinggg'
     import Toolbar from '../toolbar/Toolbar'
     import Info from '../box/Info'
+    import Progress from '../box/Progress'
     import config from '../../config/config'
    let system=null
   export default {
@@ -70,7 +73,7 @@
       }
     },
     components:{
-      AppTab,SlideBar,QueryForm,BZ,CutForm,Caopinggg,Toolbar,InfoBox,Work,
+      AppTab,SlideBar,QueryForm,BZ,CutForm,Caopinggg,Toolbar,InfoBox,Work,Progress,
         Info,
       },
       created:function(){
@@ -126,19 +129,27 @@
                 }.bind(this));
                 break;
                case '灌溉c':
-                // this.$refs.cpgg.visible=!this.$refs.cpgg.visible;
-                   this.createGood();
+                this.$refs.cpgg.visible=!this.$refs.cpgg.visible;
+                   this.$refs.progress.show()
+                   setTimeout(e=>{
+                       this.createGood()
+                       this.$refs.progress.close()
+                       },1700)
                 break;
                case '除草':
                 this.$refs.cutForm.visible=true
                 break;
+
                 case '施肥':
+                break;
+
+              case '灌溉t':
+                system.key=7;
                 break;
 
             case '修剪':
                 break;
-            case '灌溉t':
-                break;
+
         }
       },
       createMap: function () {
@@ -261,4 +272,10 @@
         top: 36%;
     }
     .treeMenu{top:36%}
+    .progress{position: absolute;
+        width: 60%;
+        left: 20%;
+        top:30%;
+        z-index: 99;
+    }
 </style>

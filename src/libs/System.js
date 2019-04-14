@@ -14,6 +14,7 @@ export  default  class System {
         this.animationControl=null
         this.instance=ins
         this.fixed=null
+        this.tggpath=[]
         this.queryCircle={
           r:0,
           c:{
@@ -205,6 +206,25 @@ export  default  class System {
                       obj.instance.$store.commit('setWork',o);*/
                   obj.key=0;
                   break;
+                case 7:
+
+                obj.drawSingleMarker(e,'tree');
+                obj.tggpath.push(e.point)
+                    if (obj.tggpath.length>4){
+                      /*  Data.analysis.tggPath.forEach((e)=>{
+                            p.push()
+                        })*/
+                        let l=new BMap.Polyline(obj.tggpath,{
+                            strokeColor:'blue',
+                            strokeStyle:'dashed'
+                        });
+                        obj.tggpath=[]
+                        obj.map.addOverlay(l)
+                        obj.key=0;
+
+                    }
+
+                    break;
             }
 
 
@@ -365,6 +385,27 @@ export  default  class System {
 
          })
    }
+    drawSingleMarker(e,img){
+        let o=this
+
+        let icon=new BMap.Icon(`../../static/${img}.png`,{
+            width:100,
+            height:100,
+        },{
+            imageOffset:{
+                width:30,
+                height:37
+            }
+        });
+        icon.setImageSize({
+            width:30,
+            height:30
+        })
+        var marker = new BMap.Marker(e.point,{
+            icon:icon
+        });
+        o.map.addOverlay(marker);
+    }
 //   判断浏览器是否支持canvas
   isSupportCanvas(){
        let e=document.createElement('canvas')
@@ -422,12 +463,12 @@ export  default  class System {
            }
            if (start.lng<=end.lng){
              start.lat+=dlat*0.1
-             this.map.addOverlay(new BMap.Marker(new BMap.Point(133.652538,40.759862)));
+             this.map.addOverlay(new BMap.Marker(new BMap.Point(Data.wells.near.lng,Data.wells.near.lat)));
            }else{
              start.lng-=dlng*0.1
            }
 
-           let icon=new BMap.Icon('../../static/logo.png',{
+           let icon=new BMap.Icon('../../static/man.png',{
              width:100,
              height:100,
            },{
@@ -448,7 +489,7 @@ export  default  class System {
        }
   }
   man(e){
-      let icon=new BMap.Icon('../../static/logo.png',{
+      let icon=new BMap.Icon('../../static/man.png',{
           width:100,
           height:100,
       },{
