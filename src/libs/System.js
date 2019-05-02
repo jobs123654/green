@@ -13,6 +13,15 @@ export  default  class System {
         this.result=null
         this.animationControl=null
         this.instance=ins
+        this.fixed=null
+        this.tggpath=[]
+        this.queryCircle={
+          r:0,
+          c:{
+            lng:0,
+            lat:0
+          }
+        }
 
         /*加载瓦片地图*/
         var tileLayer = new BMap.TileLayer();
@@ -25,9 +34,7 @@ export  default  class System {
         var MyMap = new BMap.MapType('MyMap', tileLayer);
 
         this.map  = new BMap.Map('map', {mapType: MyMap});
-        setTimeout(function () {
-          this.map.setZoom(5)
-        }.bind(this),200)
+
 
         /*over*/
         // 创建地图实例
@@ -37,22 +44,24 @@ export  default  class System {
         this.map.addControl(new BMap.ScaleControl());
         this.map.addControl(new BMap.OverviewMapControl());
         // 118.59895,39.210264
-        var point = new BMap.Point(130.593988,46.365911);
+        var point = new BMap.Point(133.571437 ,40.515121);
 
         // 中心点坐标
-        this.map.centerAndZoom(point, 4);
+        this.map.centerAndZoom(point, 8);
+        setTimeout(function () {
+            this.map.setZoom(7)
+        }.bind(this),500)
+
         let m=this.map;
-
-
         var mapStyle ={
-
             style : 'grassgreen',
         };
         this.map.setMapStyle(mapStyle)
         this.map.enableScrollWheelZoom(true);
 
+
         // this.map.setMaxZoom(12);
-        // this.map.setZoom(7);
+        // this.map.setZoom(8);
         /*面样式*/
         this.polygonStyle= {
             strokeColor:"red",    //边线颜色
@@ -77,8 +86,25 @@ export  default  class System {
           strokeColor:'#91a87d',
         }));
       }.bind(this));
-        /*左键*/
+
+       /*鼠标移动事件*/
+        this.map.addEventListener("mousemove",function (e) {
+          // console.log(e)
+          /* body... */
+          switch (this.key){
+            case 5:
+              // statements_1
+                 this.queryCircle.r=this.getDistance(this.queryCircle.c,e.point)
+                  obj.drawCircle(this.queryCircle.c,this.queryCircle.r);
+              break;
+            default:
+              // statements_def
+              break;
+          }
+        }.bind(this))
+        /*点击事件*/
         this.map.addEventListener("click", function(e){
+
             /!*标注点*!/
           let x=e.point.lng;
             let y=e.point.lat;
@@ -158,11 +184,53 @@ export  default  class System {
                  obj.key=0;
                 break;
             //    圆选
+                  case 5:
+                  obj.queryCircle.c=e.point
+                  obj.drawCircle(obj.queryCircle.c,obj.queryCircle.r);
+                  if (obj.queryCircle.r>0) {
+                    obj.key=0;//停止绘制
+                    obj.queryCircle={
+                      r:0,
+                      c:{
+                        lng:0,
+                        lat:0
+                      }
+                    }
+                  }
+                  break;
+                  // 作业单
+                  case 6:
+                  obj.instance.$refs.work.show()
+                     /* let o=obj.instance.$store.state.work;
+                      o.time=common.getDate()
+                      obj.instance.$store.commit('setWork',o);*/
+                  obj.key=0;
+                  break;
+                case 7:
 
+                obj.drawSingleMarker(e,'tree');
+                obj.tggpath.push(e.point)
+                    if (obj.tggpath.length>4){
+                      /*  Data.analysis.tggPath.forEach((e)=>{
+                            p.push()
+                        })*/
+                        let l=new BMap.Polyline(obj.tggpath,{
+                            strokeColor:'blue',
+                            strokeStyle:'dashed'
+                        });
+                        obj.tggpath=[]
+                        obj.map.addOverlay(l)
+                        obj.key=0;
+
+                    }
+
+                    break;
             }
 
 
         });
+
+
 
         /*图形数据采集*/
         window.addEventListener('keydown',function (e) {
@@ -210,6 +278,21 @@ export  default  class System {
             });
         }
 
+    }
+    addMan(){
+        if (this.fixed){
+            this.map.removeOverlay(this.fixed)
+            this.fixed=null
+        } else{
+            this.fixed=this.man(Data.person.position);
+            this.map.addOverlay(this.fixed)
+        }
+
+
+
+    }
+    getDistance(e1,e2){
+        return Math.sqrt((e1.lng-e2.lng)*(e1.lng-e2.lng)+(e1.lat-e2.lat)*(e1.lat-e2.lat))
     }
     getRealDis(v){
       return v*16.5;
@@ -302,6 +385,27 @@ export  default  class System {
 
          })
    }
+    drawSingleMarker(e,img){
+        let o=this
+
+        let icon=new BMap.Icon(`../../static/${img}.png`,{
+            width:100,
+            height:100,
+        },{
+            imageOffset:{
+                width:30,
+                height:37
+            }
+        });
+        icon.setImageSize({
+            width:30,
+            height:30
+        })
+        var marker = new BMap.Marker(e.point,{
+            icon:icon
+        });
+        o.map.addOverlay(marker);
+    }
 //   判断浏览器是否支持canvas
   isSupportCanvas(){
        let e=document.createElement('canvas')
@@ -359,12 +463,12 @@ export  default  class System {
            }
            if (start.lng<=end.lng){
              start.lat+=dlat*0.1
-             this.map.addOverlay(new BMap.Marker(new BMap.Point(133.652538,40.759862)));
+             this.map.addOverlay(new BMap.Marker(new BMap.Point(Data.wells.near.lng,Data.wells.near.lat)));
            }else{
              start.lng-=dlng*0.1
            }
 
-           let icon=new BMap.Icon('../../static/logo.png',{
+           let icon=new BMap.Icon('../../static/man.png',{
              width:100,
              height:100,
            },{
@@ -383,6 +487,25 @@ export  default  class System {
            this.map.addOverlay(marker);
          }.bind(this),1000)
        }
+  }
+  man(e){
+      let icon=new BMap.Icon('../../static/man.png',{
+          width:100,
+          height:100,
+      },{
+          imageOffset:{
+              width:30,
+              height:37
+          }
+      });
+      icon.setImageSize({
+          width:30,
+          height:30
+      })
+      let marker = new BMap.Marker(e,{
+          icon:icon
+      });
+      return marker
   }
 //  设置中心
   focus(e){
@@ -412,10 +535,15 @@ export  default  class System {
 
 
   }
-  polygonClick(e){
-       alert(1)
-  }
-
+  // 画圆
+   drawCircle(e,r){
+    let circle=new BMap.Circle(e.point,r,{
+      strokeColor:'lightblue',
+      fillColor:'#fff',
+      fillOpacity:0.5
+    });
+    this.map.addOverlay(circle)
+   }
 
 }
 

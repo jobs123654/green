@@ -1,8 +1,8 @@
 <template>
     <div v-show="header_visible">
-        <mt-header title="首页" style="background-color: #41b883">
-            <router-link to="" slot="left">
-                <mt-button icon="back" @click="$router.back(-1)"></mt-button>
+        <mt-header :title="title" style="background-color: #41b883">
+            <router-link to="" slot="left" v-show="left">
+                <mt-button icon="back" @click="$router.back(-1)" ></mt-button>
             </router-link>
             <router-link to="" slot="right">
                 <mt-button icon="more" @click="more"></mt-button>
@@ -15,43 +15,53 @@
 </template>
 
 <script>
-  import Nine from './Nine'
+
   let obj=null;
   export default {
     name: 'Header',
-    components: {Nine},
+
     data:function () {
       return{
-        header_visible:false,
+          left:false,
+          header_visible:false,
 
         action:false,
+          title:'首页',
 
         routeName:'',
         actions:[
           {
             name:'首页',
             method:function () {
-              obj.$router.push('Index')
+                obj.title='首页'
+                obj.left=false
+                obj.$router.push('Index')
 
             }
           },
           {
             name:'系统设置',
-            method:function () {
-              obj.$router.push('Set')
 
+              method:function () {
+                  obj.left=true
+              obj.$router.push('Set')
+                  obj.title='系统设置'
             }
           },
           {
             name:'个人中心',
+
             method:function () {
-              obj.$router.push('User')
+                obj.left=true
+                obj.$router.push('User')
+                obj.title='个人中心'
 
             }
           },
           {
             name:'退出账号',
             method:function () {
+                obj.left=false
               obj.logout();
             }
           },
@@ -60,6 +70,7 @@
     },
     mounted:function(){
       obj=this;
+
     },
     created:function(){
 
@@ -75,6 +86,7 @@
         obj.$router.push('Login')
         obj.header_visible = false;
         obj.routeName = 'Login';
+        this.title='首页'
       },
       getParams: function () {
         // 取到路由带过来的参数

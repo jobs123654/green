@@ -1,10 +1,8 @@
 <template>
   <div id="root" v-show="visible">
-        <span class="item"  @click="cpgg(0)">
-             <span class="btn btn-default glyphicon glyphicon-screenshot" title="开启捕捉模式"></span>
+        <span title="开启捕捉模式" class="item btn btn-default glyphicon glyphicon-screenshot"  style="border-radius: 10px;"  @click="cpgg(0)">
          </span>
-        <span class="item" @click="cpgg(1)">
-             <span class="btn btn-default glyphicon glyphicon-hand-up" title="显示低洼区"></span>
+        <span title="显示低洼区" class="item btn btn-default glyphicon glyphicon-hand-up" @click="cpgg(1)">
          </span>
   </div>
 </template>
@@ -38,8 +36,8 @@
     width: 10%;
     height: auto;
     position: absolute;
-    left: 85%;
-    top: 55%;
+    left: 3%;
+    top: 70%;
     z-index: 9;
   }
   #root img{
@@ -48,11 +46,12 @@
   }
   #root .item{
     display: block;
-    border-radius: 50%;
+
     z-index: 9;
     margin-top: 30%;
-    background-color: white;
+    background-color: lightgreen;
     cursor: pointer;
+      color: white;
   }
 
 </style>
