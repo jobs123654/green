@@ -25,6 +25,7 @@
    <InfoBox :list="infoBox" ref="InfoBox"></InfoBox>
    <!-- 作业单 -->
      <Work ref='work' :work="work"></Work>
+   <BchJl ref='work' :work="work"></BchJl>
      <!--提示框-->
      <Info ref="info"></Info>
      <!--进度条-->
@@ -42,6 +43,7 @@
     import QueryForm from '../box/QueryForm'
     import InfoBox from '../box/InfoBox'
     import Work from '../box/Work'
+    import BchJl from '../box/BchJl'
     import BZ from '../map/BZ'
 
     import System from '../../libs/System'
@@ -73,7 +75,7 @@
       }
     },
     components:{
-      AppTab,SlideBar,QueryForm,BZ,CutForm,Caopinggg,Toolbar,InfoBox,Work,Progress,
+      AppTab,SlideBar,QueryForm,BZ,CutForm,Caopinggg,Toolbar,InfoBox,Work,Progress,BchJl,
         Info,
       },
       created:function(){

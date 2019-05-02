@@ -27,7 +27,7 @@
 			</div>
 		<div class="input-group col-md-6">
 		  <span class="input-group-addon" id="basic-addon1">操作对象</span>
-		  <input type="text" v-model='work.obj' class="form-control" focus aria-describedby="basic-addon1">
+		  <input type="text" v-model='zb' class="form-control" focus aria-describedby="basic-addon1">
 		</div>
 
 		<div class="input-group col-md-6">
@@ -52,13 +52,13 @@
           <button  class="btn btn-default" @click="close">取消</button>
         </div>
 		</div>
-
 	</div>
 	</transition>
 </template>
 <script type="text/javascript">
 
 	import common from "../../libs/common";
+	import {addWork} from '../../../static/common/api'
 
     export default{
 	    props:{
@@ -69,7 +69,7 @@
 			return{
 				visible:false,
 				content:this.work.content,
-				obj:this.work.obj,
+				zb:this.work.obj,
 				beizhu:this.work.beizhu,
 				quyu:this.work.quyu,
 				man:this.work.man,
@@ -107,7 +107,19 @@
 			this.visible=false
 			},
 			submit(){
-			    console.log(this.getWork)
+			    let work={
+            content:this.content,
+            other:this.beizhu,
+            areaId:2018,
+            zbId:2019,
+            date:new Date().toLocaleDateString(),
+            userId:2019
+          }
+         addWork(func.getUrlRequestData(work))
+          .then(function (response) {
+            MessageBox(response.data)
+          })
+
 				this.close()
 			}
 		}

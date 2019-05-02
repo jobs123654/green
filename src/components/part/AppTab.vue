@@ -83,7 +83,7 @@
 
         },
         bch:function () {
-            this.$emit('bch');
+            bus.$emit('showBchJl');
         },
         weisheng:function () {
             this.$emit('weisheng');
